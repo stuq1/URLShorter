@@ -1,0 +1,162 @@
+.ibm-plex-mono-thin {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.ibm-plex-mono-extralight {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.ibm-plex-mono-light {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.ibm-plex-mono-regular {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.ibm-plex-mono-medium {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.ibm-plex-mono-semibold {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.ibm-plex-mono-bold {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.ibm-plex-mono-thin-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.ibm-plex-mono-extralight-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 200;
+    font-style: italic;
+}
+
+.ibm-plex-mono-light-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.ibm-plex-mono-regular-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.ibm-plex-mono-medium-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.ibm-plex-mono-semibold-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.ibm-plex-mono-bold-italic {
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+:root {
+    --color-1: #2C98C7;
+    --color-2: #23799E;
+    --color-3: #34B4EB;
+    --color-4: #1A5A75;
+    --color-5: #003952;
+}
+
+body {
+    margin: 0;
+}
+
+header {
+    padding: 8px 0px;
+    background-color: var(--color-2);
+}
+
+#title_line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.header-logo {
+    margin: auto;
+}
+
+.header-logo img {
+    display: block;
+    width: 64px;
+    height: 64px;
+}
+
+.header-title {
+    display: block;
+    /*background-color: blue;*/
+    font-size: 36px;
+    color: white;
+    margin: auto 0 auto;
+    padding-bottom: 8px;
+}
+
+.header-left {
+    margin: auto;
+    margin-left: 8px;
+}
+
+.header-right {
+    margin: auto;
+    margin-right: 8px;
+}
+
+.header-button {
+    padding: 15px !important;
+    width: 64px;
+}
+
+.header-button-icon {
+    display: block;
+    margin: auto;
+}
+
+.wrapper {
+    @media (min-width: 1081px) {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+main {
+    width: 100%;
+    height: 50px;
+}
+
+.main-url {
+    background-color: var(--color-5);
+    color: white;
+}
