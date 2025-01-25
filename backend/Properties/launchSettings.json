@@ -9,6 +9,12 @@
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5081"
     },
+    "http (Release)": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5081"
+    },
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
