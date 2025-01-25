@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 namespace url_shorter_backend
@@ -47,6 +48,40 @@ namespace url_shorter_backend
                 });
             builder.Services.AddSingleton<services.JwtTokenService>();
 
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "URL Shorter API",
+                    Version = "v1"
+                });
+
+                // ��������� ����������� �������������� JWT �������
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Authorization header using the Bearer scheme (Authorization: Bearer &lt;token&gt;). <br> Do not specify the prefix 'Bearer'",
+                    BearerFormat = "JWT",
+                    Scheme = "bearer",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference
+                            {
+                                Id = "bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new string[] { "" }
+                    }
+                });
+            });
+
             var app = builder.Build();
 
             app.UseRouting();
@@ -58,6 +93,13 @@ namespace url_shorter_backend
             });
 
             app.MapGet("/", () => "Index");
+            //app.MapGet("/data", [Authorize] (HttpContext context) => $"Hello World!");
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             app.Run();
         }
