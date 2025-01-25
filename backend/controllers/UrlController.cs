@@ -5,17 +5,26 @@ namespace url_shorter_backend.controllers;
 
 [ApiController]
 [Route("api/url/")]
-public class UrlController
+public class UrlController : ControllerBase
 {
 
     [HttpGet("list")]
     [Authorize]
-    public IResult List()
+    [AllowAnonymous]
+    public IActionResult List()
     {
+        // Возвращаем авторизованному пользователю созданные им ссылки
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Ok(new {
+                data = new object[] { }
+            });
+        }
+
         // TODO: заглушка
-        return Results.Json(new[] {
+        return Ok(new[] {
             new {
-                id = 1, 
+                id = 1,
                 full_url = "https://...",
                 short_url = "https://...",
                 creation_date = "25/01/2025",

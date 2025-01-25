@@ -9,6 +9,8 @@ namespace url_shorter_backend
     {
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "URLShorterSpecificOrigins";
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddRouting();
@@ -57,7 +59,6 @@ namespace url_shorter_backend
                     Version = "v1"
                 });
 
-                // ��������� ����������� �������������� JWT �������
                 c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -82,10 +83,25 @@ namespace url_shorter_backend
                 });
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        // TODO: заглушка
+                        policy.WithOrigins("http://localhost:5173")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    }
+                );
+            });
+
             var app = builder.Build();
 
             app.UseRouting();
             app.UseAuthentication();
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
@@ -93,7 +109,6 @@ namespace url_shorter_backend
             });
 
             app.MapGet("/", () => "Index");
-            //app.MapGet("/data", [Authorize] (HttpContext context) => $"Hello World!");
 
             if (app.Environment.IsDevelopment())
             {
