@@ -3,22 +3,77 @@ import "./App.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons"
 import { faUser } from "@fortawesome/free-regular-svg-icons"
-import { Button, FloatingLabel, Form, InputGroup, Modal, Table } from "react-bootstrap"
+import { Button, FloatingLabel, Form, FormGroup, InputGroup, Modal, Table } from "react-bootstrap"
+import { observer } from "mobx-react-lite";
+import { userStore } from "./store/UserStore";
 
-function App() {
+const App = observer(() => {
     let onClick_user = function () {
         document.getElementById("dialog").showModal();
     }
 
-    let onClick_modalClose = function () {
-        document.getElementById("dialog").close();
+    const [signinIsShow, setSigninIsShow] = useState(false);
+    const [signinUsername, setSigninUsername] = useState("");
+    const [signinPassword, setSigninPassword] = useState("");
+
+    const signinOnClose = () => {
+        setSigninUsername("");
+        setSigninPassword("");
+        setSigninIsShow(false);
+    }
+    const handleShow = () => setSigninIsShow(true);
+
+    const [signupIsShow, setSignupIsShow] = useState(false);
+    const [signupUsername, setSignupUsername] = useState("");
+    const [signupPassword, setSignupPassword] = useState("");
+    const [signupPasswordRepeat, setSignupPasswordRepeat] = useState("");
+
+    const signupOnClose = () => {
+        setSignupUsername("");
+        setSignupPassword("");
+        setSignupPasswordRepeat("");
+        setSignupIsShow(false);
+    }
+    const handleRegistrationShow = () => setSignupIsShow(true);
+
+    let userIsAuth = userStore.userIsAuth;
+    let signin = async (username, password) => await userStore.signin(username, password);
+    let signup = async (username, password) => await userStore.signup(username, password);
+    let logout = () => userStore.logout();
+
+    const signinOnSubmit = async (e) => {
+        e.preventDefault();
+
+        const success = await signin(signinUsername, signinPassword);
+
+        if (success) {
+            signinOnClose();
+        } else {
+            //
+        }
     }
 
-    const [show, setShow] = useState(false);
-    const [isUser, setIsUser] = useState(false);
+    const signupOnSubmit = async (e) => {
+        e.preventDefault();
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+        const success = await signup(signupUsername, signupPassword);
+
+        if (success) {
+            signupOnClose();
+        } else {
+            //
+        }
+    }
+
+    const loginModalOpen = () => {
+        signupOnClose();
+        handleShow();
+    };
+
+    const registrationModalOpen = () => {
+        signinOnClose();
+        handleRegistrationShow();
+    };
 
     return (
         <>
@@ -33,7 +88,7 @@ function App() {
                         </div>
                     </div>
                     <div className="header-right d-flex">
-                        {!isUser ?
+                        {!userIsAuth ?
 
                             <Button
                                 variant="outline-light"
@@ -48,7 +103,7 @@ function App() {
                             <Button
                                 variant="outline-light"
                                 className="rounded-circle header-button"
-                                onClick={() => setIsUser(false)}
+                                onClick={logout}
                             >
                                 <FontAwesomeIcon className="header-button-icon" icon={faUser} size="2x" />
                             </Button>
@@ -69,8 +124,13 @@ function App() {
                     }}>
                         <Form.Label>
                             Введите URL для сокращения:
-                        </Form.Label>
-                        <InputGroup controlId="URLInput">
+                        </Form.Label><br />
+                        {!userIsAuth &&
+                            <Form.Label style={{ color: "red" }}>
+                                Без авторизации статистика собираться не будет
+                            </Form.Label>
+                        }
+                        <InputGroup>
                             <InputGroup.Text id="inputGroup-sizing-default">
                                 URL:
                             </InputGroup.Text>
@@ -210,34 +270,101 @@ function App() {
                         </Table>
                     </div>
                 </div>
-            </main>
+            </main >
 
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Войти в аккаунт</Modal.Title>
-                </Modal.Header>
+            <Modal show={signinIsShow} onHide={signinOnClose}>
+                <FormGroup role="form">
+                    <form onSubmit={signinOnSubmit}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Войти в аккаунт</Modal.Title>
+                        </Modal.Header>
 
-                <Modal.Body>
-                    <FloatingLabel controlId="EmailInput" label="Почта" className="mb-3">
-                        <Form.Control type="email" placeholder="name@example.com" />
-                    </FloatingLabel>
+                        <Modal.Body>
+                            <FloatingLabel controlId="LoginInput" label="Логин" className="mb-3" >
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Логин"
+                                    required
+                                    value={signinUsername}
+                                    onChange={(e) => setSigninUsername(e.target.value)}
+                                />
+                            </FloatingLabel>
 
-                    <FloatingLabel controlId="PasswordInput" label="Пароль">
-                        <Form.Control type="password" placeholder="Пароль" />
-                    </FloatingLabel>
-                </Modal.Body>
+                            <FloatingLabel controlId="PasswordInput" label="Пароль">
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Пароль"
+                                    required
+                                    value={signinPassword}
+                                    onChange={(e) => setSigninPassword(e.target.value)}
+                                />
+                            </FloatingLabel>
+                        </Modal.Body>
 
-                <Modal.Footer className="d-flex justify-content-between">
-                    <Button variant="primary" onClick={() => { setShow(false); setIsUser(true); }} >
-                        Войти
-                    </Button>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Регистрация
-                    </Button>
-                </Modal.Footer>
+                        <Modal.Footer className="d-flex justify-content-between">
+                            <Button type="submit" variant="primary">
+                                Войти
+                            </Button>
+                            <Button variant="secondary" onClick={registrationModalOpen}>
+                                Регистрация
+                            </Button>
+                        </Modal.Footer>
+                    </form>
+                </FormGroup>
+            </Modal>
+
+            <Modal show={signupIsShow} onHide={signupOnClose}>
+                <FormGroup role="form">
+                    <form onSubmit={signupOnSubmit}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Зарегистрировать аккаунт</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body>
+                            <FloatingLabel controlId="RegistrationLoginInput" label="Логин" className="mb-3" >
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Логин"
+                                    required
+                                    value={signupUsername}
+                                    onChange={(e) => setSignupUsername(e.target.value)}
+                                />
+                            </FloatingLabel>
+
+                            <FloatingLabel controlId="RegistrationPasswordInput" label="Пароль" className="mb-3">
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Пароль"
+                                    required
+                                    value={signupPassword}
+                                    onChange={(e) => setSignupPassword(e.target.value)}
+                                />
+                            </FloatingLabel>
+
+                            <FloatingLabel controlId="RegistrationPasswordRepeatInput" label="Повторите пароль">
+                                <Form.Control
+                                    type="password"
+                                    placeholder="Пароль"
+                                    required
+                                    value={signupPasswordRepeat}
+                                    onChange={(e) => setSignupPasswordRepeat(e.target.value)}
+                                />
+                            </FloatingLabel>
+                        </Modal.Body>
+
+                        <Modal.Footer className="d-flex justify-content-between">
+                            <Button type="submit" variant="primary">
+                                Регистрация
+                            </Button>
+                            <Button variant="secondary" onClick={loginModalOpen}>
+                                Войти
+                            </Button>
+                        </Modal.Footer>
+                    </form>
+                </FormGroup>
             </Modal>
         </>
-    )
-}
+    );
+})
 
 export default App
