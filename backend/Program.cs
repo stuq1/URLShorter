@@ -55,6 +55,7 @@ namespace url_shorter_backend
             var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
             builder.Services.AddDbContextPool<AppDbContext>(options => options.UseNpgsql(/*builder.Configuration.GetConnectionString("PostgresConnection")*/connectionString));
 
+            builder.Services.AddScoped<services.ShortUrlGenerator>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
