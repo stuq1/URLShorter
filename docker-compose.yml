@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: urlshorter
+      POSTGRES_PASSWORD: urlshorter
+      POSTGRES_DB: urlshorter
+    ports:
+      - "5432:5432"
+
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      DATABASE_CONNECTION_STRING: Host=postgres;Database=urlshorter;Username=urlshorter;Password=urlshorter
+    ports:
+      - "8180:8080"
+      - "8181:8081"
+    depends_on:
+      - postgres
