@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons"
-import { faUser } from "@fortawesome/free-regular-svg-icons"
+import { faArrowRightToBracket, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "react-bootstrap"
 import { observer } from "mobx-react-lite";
 
@@ -29,6 +28,8 @@ const AppHeader = observer(() => {
     const handleSignupShow = () => setSignupIsShow(true);
 
     let userIsAuth = userStore.userIsAuth;
+    let username = userStore.username;
+
     let signin = async (username, password) => await userStore.signin(username, password);
     let signup = async (username, password) => await userStore.signup(username, password);
     let logout = () => userStore.logout();
@@ -66,7 +67,7 @@ const AppHeader = observer(() => {
         signinOnClose();
         handleSignupShow();
     };
-    
+
     return (
         <header>
             <div className="wrapper d-flex justify-content-between">
@@ -90,15 +91,18 @@ const AppHeader = observer(() => {
                         </Button>
 
                         :
-
-                        <Button
-                            variant="outline-light"
-                            className="rounded-circle header-button"
-                            onClick={logout}
-                        >
-                            <FontAwesomeIcon className="header-button-icon" icon={faUser} size="2x" />
-                        </Button>
-
+                        <>
+                            <div className="header-title ibm-plex-mono-regular" style={{ marginRight: 8 }}>
+                                Привет, {username}!
+                            </div>
+                            <Button
+                                variant="outline-light"
+                                className="rounded-circle header-button"
+                                onClick={logout}
+                            >
+                                <FontAwesomeIcon className="header-button-icon" icon={faArrowRightFromBracket} size="2x" />
+                            </Button>
+                        </>
                     }
 
                     <div id="user"

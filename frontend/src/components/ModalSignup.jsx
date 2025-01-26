@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Alert, Button, FloatingLabel, Form, FormGroup, Modal } from "react-bootstrap"
+import { Alert, Button, FloatingLabel, Form, Modal } from "react-bootstrap"
 
 const ModalSignup = ({ show, onClose, onSubmit, onOpenSignin }) => {
     const [signupUsername, setSignupUsername] = useState("");
