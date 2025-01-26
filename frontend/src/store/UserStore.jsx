@@ -5,15 +5,16 @@ class UserStore {
 
     token = null;
     userIsAuth = false;
+    username = null;
 
     constructor() {
         makeAutoObservable(this);
         this.loadToken();
     }
 
-    async signin(username = "admin", password = "password") {
+    async signin(username, password) {
         try {
-            const response = await axios.post("http://localhost:5081/api/auth/login", {
+            const response = await axios.post(`${import.meta.env.VITE_HOST}/api/auth/signin`, {
                 username,
                 password
             });
@@ -21,9 +22,10 @@ class UserStore {
             const json = response.data;
             const token = json.token;
 
-            if (token) {
+            if (json.token) {
                 runInAction(() => {
-                    this.token = token;
+                    this.token = json.token;
+                    this.username = json.username;
                     this.userIsAuth = true;
                     this.saveToken(token);
                 });
@@ -40,7 +42,7 @@ class UserStore {
 
     async signup(username, password) {
         try {
-            const response = await axios.post("http://localhost:5081/api/auth/signup", {
+            const response = await axios.post(`${import.meta.env.VITE_HOST}/api/auth/signup`, {
                 username,
                 password
             });
@@ -48,9 +50,10 @@ class UserStore {
             const json = response.data;
             const token = json.token;
 
-            if (token) {
+            if (json.token) {
                 runInAction(() => {
-                    this.token = token;
+                    this.token = json.token;
+                    this.username = json.username;
                     this.userIsAuth = true;
                     this.saveToken(token);
                 });
@@ -68,6 +71,7 @@ class UserStore {
     logout() {
         this.token = null;
         this.userIsAuth = false;
+        this.username = null;
         this.removeToken();
     }
 
@@ -88,7 +92,7 @@ class UserStore {
 
     async validateToken(token) {
         try {
-            const response = await axios.post("http://localhost:5081/api/auth/validate", {}, {
+            const response = await axios.post(`${import.meta.env.VITE_HOST}/api/auth/validate`, {}, {
                 headers: {
                     Authorization: "Bearer " + token
                 }
@@ -97,14 +101,18 @@ class UserStore {
             if (response.data.valid) {
                 runInAction(() => {
                     this.token = token;
+                    this.username = response.data.username;
                     this.userIsAuth = true;
                 });
+                return true;
             } else {
                 this.logout();
             }
         } catch (err) {
             this.logout();
         }
+        
+        return false;
     }
 
 }
