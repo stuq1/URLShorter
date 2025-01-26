@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using url_shorter_backend.models;
 
 namespace url_shorter_backend
 {
@@ -50,6 +52,11 @@ namespace url_shorter_backend
                 });
             builder.Services.AddSingleton<services.JwtTokenService>();
 
+            var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+            builder.Services.AddDbContextPool<AppDbContext>(options => options.UseNpgsql(/*builder.Configuration.GetConnectionString("PostgresConnection")*/connectionString));
+
+            builder.Services.AddScoped<services.ShortUrlGenerator>();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -88,8 +95,7 @@ namespace url_shorter_backend
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     policy =>
                     {
-                        // TODO: заглушка
-                        policy.WithOrigins("http://localhost:5173")
+                        policy.WithOrigins(configuration["CorsOrigin"]!)
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials();
@@ -98,6 +104,21 @@ namespace url_shorter_backend
             });
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                try
+                {
+                    dbContext.Database.OpenConnection();
+                    dbContext.Database.CloseConnection();
+                    Console.WriteLine("Database is work");
+                }
+                catch
+                {
+                    Console.WriteLine("Database connection error");
+                }
+            }
 
             app.UseRouting();
             app.UseAuthentication();

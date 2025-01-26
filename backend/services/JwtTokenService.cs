@@ -14,7 +14,7 @@ public class JwtTokenService
         _configuration = configuration;
     }
 
-    public string GenerateToken(string user)
+    public string GenerateToken(int id, string username)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings")!;
         var secretKey = jwtSettings["SecretKey"]!;
@@ -24,8 +24,8 @@ public class JwtTokenService
 
         var claims = new[]
         {
-            // TODO: заглушка
-            new Claim(JwtRegisteredClaimNames.Sub, user),
+            new Claim("Id", id.ToString()),
+            new Claim("Username", username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
